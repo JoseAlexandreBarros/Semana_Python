@@ -7,7 +7,7 @@ from .utils import calculo_total, calcula_equilibrio_financeiro
 from extrato.models import Valores
 from django.db.models import Sum
 from datetime import datetime
-
+from contas.models import ContaPagar,ContaPaga
 
 
 
@@ -24,8 +24,21 @@ def home(request):
 
     percentual_gastos_essenciais, percentual_gastos_nao_essenciais=calcula_equilibrio_financeiro()
 
+    MES_ATUAL = datetime.now().month
+    DIA_ATUAL = datetime.now().day
     
-    return render(request, 'home.html',{'contas':contas,'total_contas':total_contas, 'total_entradas':total_entradas, 'total_saidas':total_saidas,'percentual_gastos_essenciais':int(percentual_gastos_essenciais),'percentual_gastos_nao_essenciais':int(percentual_gastos_nao_essenciais)})
+    contas = ContaPagar.objects.all()
+
+    contas_pagas = ContaPaga.objects.filter(data_pagamento__month=MES_ATUAL).values('conta')
+
+    contas_vencidas = contas.filter(dia_pagamento__lt=DIA_ATUAL).exclude(id__in=contas_pagas)
+    
+    contas_proximas_vencimento = contas.filter(dia_pagamento__lte = DIA_ATUAL + 5).filter(dia_pagamento__gte=DIA_ATUAL).exclude(id__in=contas_pagas)
+    
+    
+
+    
+    return render(request, 'home.html',{'contas':contas,'total_contas':total_contas, 'total_entradas':total_entradas, 'total_saidas':total_saidas,'percentual_gastos_essenciais':int(percentual_gastos_essenciais),'percentual_gastos_nao_essenciais':int(percentual_gastos_nao_essenciais),'contas_vencidas': len(contas_vencidas),'contas_vencimento':len(contas_proximas_vencimento)})
 
 def gerenciar(request):
     contas=Conta.objects.all()

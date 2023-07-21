@@ -44,3 +44,11 @@ class Conta(models.Model):
 
     def __str__(self):
         return self.apelido
+    
+class Mensal(models.Model):
+    nome=models.CharField(max_length=50,default='saldo')
+    saldo=models.FloatField(default=0)
+    despesas=models.FloatField(default=0)
+
+    def __str__(self):
+        return self.nome

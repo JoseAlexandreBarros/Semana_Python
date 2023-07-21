@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import Categoria, Conta
+from .models import Categoria, Conta,Mensal
 from django.contrib import messages
 from django.contrib.messages import constants
 from .utils import calculo_total, calcula_equilibrio_financeiro
@@ -35,10 +35,14 @@ def home(request):
     
     contas_proximas_vencimento = contas.filter(dia_pagamento__lte = DIA_ATUAL + 5).filter(dia_pagamento__gte=DIA_ATUAL).exclude(id__in=contas_pagas)
     
+    saldo=Mensal.objects.get(nome='saldo')
     
+    balanco=saldo.saldo-saldo.despesas
 
     
-    return render(request, 'home.html',{'contas':contas,'total_contas':total_contas, 'total_entradas':total_entradas, 'total_saidas':total_saidas,'percentual_gastos_essenciais':int(percentual_gastos_essenciais),'percentual_gastos_nao_essenciais':int(percentual_gastos_nao_essenciais),'contas_vencidas': len(contas_vencidas),'contas_vencimento':len(contas_proximas_vencimento)})
+    return render(request, 'home.html',{'contas':contas,'total_contas':total_contas, 'total_entradas':total_entradas, 'total_saidas':total_saidas,'percentual_gastos_essenciais':int(percentual_gastos_essenciais),\
+                                        'percentual_gastos_nao_essenciais':int(percentual_gastos_nao_essenciais),'contas_vencidas': len(contas_vencidas),'contas_vencimento':len(contas_proximas_vencimento),\
+                                           'saldo_mes': saldo.saldo,'despesa_mes': saldo.despesas,'balaco': balanco})
 
 def gerenciar(request):
     contas=Conta.objects.all()
@@ -114,3 +118,20 @@ def dashboard(request):
     
     return render(request, 'dashboard.html', {'labels': list(dados.keys()), 'values': list(dados.values())})
 
+def mes(request):
+   return render (request, 'mensal.html')
+   
+def definir_saldo(request):
+    positivo = request.POST.get('saldo')
+    saldo=Mensal.objects.all()
+    if not saldo:
+        saldo=Mensal(
+            saldo=positivo
+        )
+        saldo.save()
+        return redirect('/perfil/home/')
+    
+    else:
+        Mensal.objects.filter(nome='saldo').update(saldo=positivo)
+
+    return redirect('/perfil/home/')

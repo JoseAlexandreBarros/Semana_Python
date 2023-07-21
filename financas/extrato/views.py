@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from perfil.models import Conta, Categoria
+from perfil.models import Conta, Categoria, Mensal
 from .models import Valores
 from django.http import HttpResponse,FileResponse
 from django.contrib import messages
@@ -41,6 +41,9 @@ def novo_valor(request):
             conta.valor += int(valor)
     else:
             conta.valor -= int(valor)
+            saldo = Mensal.objects.filter(nome='saldo')
+            despesa= saldo[0].despesas + int(valor)
+            Mensal.objects.filter(nome='saldo').update(despesas=despesa)
 
     conta.save()
 

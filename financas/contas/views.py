@@ -1,9 +1,12 @@
+from email.policy import HTTP
+#from http.client import HttpResponse
 from django.shortcuts import render,redirect
 from perfil.models import Categoria
 from .models import ContaPagar,ContaPaga
 from django.contrib import messages
 from django.contrib.messages import constants
 from datetime import datetime
+from django.http import HttpResponse
 
 def definir_contas(request):
     if request.method == "GET":
@@ -45,3 +48,9 @@ def ver_contas(request):
     restantes = contas.exclude(id__in=contas_vencidas).exclude(id__in=contas_pagas).exclude(id__in=contas_proximas_vencimento)
 
     return render(request, 'ver_contas.html', {'contas_vencidas': contas_vencidas, 'contas_proximas_vencimento': contas_proximas_vencimento, 'restantes': restantes})
+
+def pagar_conta(request,id):
+    conta=ContaPagar.objects.get(id=id)
+    conta.delete()
+    
+    return redirect('/contas/ver_contas/')

@@ -10,6 +10,8 @@ urlpatterns = [
     path('deletar_banco/<int:id>', views.deletar_banco , name='deletar_banco'),
     path('cadastrar_categoria/', views.cadastrar_categoria, name="cadastrar_categoria"),
     path('update_categoria/<int:id>',views.update_categoria,name='update_categoria'),
-    path('dashboard/', views.dashboard, name="dashboard")
+    path('dashboard/', views.dashboard, name="dashboard"),
+    path('mes/', views.mes,name='mes'),
+    path('definir_saldo',views.definir_saldo, name='definir_saldo')
    
 ]

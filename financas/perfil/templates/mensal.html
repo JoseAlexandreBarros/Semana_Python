@@ -1,0 +1,47 @@
+{% extends 'bases/base.html' %}
+{% load static %}
+{% block 'head' %}
+
+    <link href="{% static 'perfil/css/home.css' %}" rel="stylesheet">
+    <link href="{% static 'perfil/css/gerenciar.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block 'body' %}
+
+    <div class="container">
+        <br>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <br>
+        <span class="fonte-destaque">Adicionar saldo mensal</span>
+        <div class="row">
+
+            <div class="col-md-7">
+                <form action="{% url 'definir_saldo' %}" method="POST">{% csrf_token %}
+                    <div class="row">
+                        <div class="col-md">
+                            <label>Saldo</label>
+                            <input name="saldo" type="number" class="form-control">
+                        </div>
+
+                        
+                    </div>
+                    <br>
+                    
+                    <input type="submit" style="width:40%;" class="botao-principal">
+
+                </form>
+            </div>
+
+            <div class="col-md-8">
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
